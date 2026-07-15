@@ -8,8 +8,6 @@ services:
       - "8077:8080"
     environment:
       ECHOBELL_DIRECT_KEY: "${ECHOBELL_DIRECT_KEY:?ECHOBELL_DIRECT_KEY is required}"
-      ECHOBELL_NOTIFICATION_TYPE: "${ECHOBELL_NOTIFICATION_TYPE:-time-sensitive}"
-      WEBHOOK_SECRET: "${WEBHOOK_SECRET:?WEBHOOK_SECRET is required}"
     volumes:
       - unifi-echobell-data:/data
 

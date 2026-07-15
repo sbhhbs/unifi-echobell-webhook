@@ -26,6 +26,7 @@ class Config:
     unifi_site: str
     unifi_verify_ssl: bool
     unifi_timeout_seconds: float
+    always_notify: bool
 
     @classmethod
     def from_env(cls) -> "Config":
@@ -45,6 +46,7 @@ class Config:
             unifi_site=os.environ.get("UNIFI_SITE", "default").strip(),
             unifi_verify_ssl=_env_bool("UNIFI_VERIFY_SSL", True),
             unifi_timeout_seconds=_env_float("UNIFI_TIMEOUT_SECONDS", 15.0),
+            always_notify=_env_bool("ALWAYS_NOTIFY", False),
         )
         config.validate()
         return config

@@ -81,6 +81,29 @@ class WebhookServiceTests(unittest.TestCase):
             "seeded",
         )
 
+    def test_always_notify_sends_for_every_known_client_connection(self) -> None:
+        service = WebhookService(self.store, self.notifier, always_notify=True)
+        payload = {"clientMac": "00:00:00:00:00:01", "clientHostname": "phone"}
+
+        first = service.process(payload)
+        second = service.process(payload)
+
+        self.assertEqual(first.action, "notified")
+        self.assertEqual(first.reason, "")
+        self.assertEqual(second.action, "notified")
+        self.assertEqual(second.reason, "always_notify")
+        self.assertEqual(len(self.notifier.clients), 2)
+
+    def test_always_notify_still_ignores_disconnects(self) -> None:
+        service = WebhookService(self.store, self.notifier, always_notify=True)
+
+        result = service.process(
+            {"eventName": "WiFi Client Disconnected", "clientMac": "00:00:00:00:00:01"}
+        )
+
+        self.assertEqual(result.reason, "disconnect_event")
+        self.assertEqual(self.notifier.clients, [])
+
     def test_ignores_disconnect_without_recording_client(self) -> None:
         result = self.service.process(
             {"eventName": "WiFi Client Disconnected", "clientMac": "00:00:00:00:00:01"}

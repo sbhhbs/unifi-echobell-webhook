@@ -145,10 +145,14 @@ def main() -> None:
         external_link=config.external_link,
         timeout_seconds=config.echobell_timeout_seconds,
     )
-    service = WebhookService(store, notifier)
+    service = WebhookService(store, notifier, always_notify=config.always_notify)
     handler = make_handler(service, config.webhook_secret, config.max_body_bytes)
     server = ThreadingHTTPServer((config.host, config.port), handler)
-    print(f"UniFi webhook listening on http://{config.host}:{config.port}{WEBHOOK_PATH}", flush=True)
+    mode = "always notify" if config.always_notify else "new clients only"
+    print(
+        f"UniFi webhook listening on http://{config.host}:{config.port}{WEBHOOK_PATH} ({mode})",
+        flush=True,
+    )
     try:
         server.serve_forever()
     except KeyboardInterrupt:

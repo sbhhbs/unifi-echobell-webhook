@@ -79,6 +79,7 @@ The first request returns `"action":"notified"`; repeats return `"action":"ignor
 - A client is new the first time this service observes its normalized MAC address. Without UniFi bootstrap credentials, existing clients are learned as they connect after initial deployment.
 - When UniFi bootstrap credentials are configured, historical clients are seeded first and do not generate a one-time notification after deployment. Startup fails closed if the historical list cannot be loaded, preventing accidental alert floods.
 - Explicit disconnect events are ignored. This endpoint is intended only for UniFi Client Connected alarms.
+- Set `ALWAYS_NOTIFY=true` temporarily to send EchoBell for every valid connection webhook, including known clients. Disconnect events remain ignored.
 - The client is recorded before EchoBell is called. This gives at-most-once notification attempts: a failed/ambiguous EchoBell delivery is not retried when UniFi repeats the webhook, avoiding duplicate alerts.
 - To forget all clients, stop the container and remove the `unifi-webhook-data` volume. The next connection from every client will then be considered new.
 
@@ -94,6 +95,7 @@ The first request returns `"action":"notified"`; repeats return `"action":"ignor
 | `HOST` | `0.0.0.0` | Listen address |
 | `PORT` | `8080` | Listen port |
 | `MAX_BODY_BYTES` | `1048576` | Maximum webhook body size |
+| `ALWAYS_NOTIFY` | `false` | Send every valid connection event instead of only new clients |
 | `UNIFI_HOST` | empty | Optional UniFi console URL used to seed historical clients |
 | `UNIFI_API_KEY` | empty | UniFi Network integration API key; required with `UNIFI_HOST` |
 | `UNIFI_SITE` | `default` | UniFi site name used for bootstrap |

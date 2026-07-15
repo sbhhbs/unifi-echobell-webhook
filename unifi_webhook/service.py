@@ -34,9 +34,10 @@ class ProcessResult:
 
 
 class WebhookService:
-    def __init__(self, store: ClientStore, notifier: Notifier):
+    def __init__(self, store: ClientStore, notifier: Notifier, always_notify: bool = False):
         self.store = store
         self.notifier = notifier
+        self.always_notify = always_notify
 
     def process(self, payload: dict[str, Any]) -> ProcessResult:
         if is_explicit_disconnect(payload):
@@ -44,7 +45,7 @@ class WebhookService:
 
         client = parse_client(payload)
         sighting = self.store.register_sighting(client, payload)
-        if not sighting.is_new:
+        if not sighting.is_new and not self.always_notify:
             return ProcessResult(
                 action="ignored",
                 reason="known_client",
@@ -61,6 +62,7 @@ class WebhookService:
         self.store.mark_notification(client.mac, "delivered")
         return ProcessResult(
             action="notified",
+            reason="always_notify" if not sighting.is_new else "",
             client=client,
             sightings=sighting.sightings,
             echobell_status=status,
@@ -68,4 +70,3 @@ class WebhookService:
 
 
 __all__ = ["InvalidPayload", "ProcessResult", "WebhookService"]
-

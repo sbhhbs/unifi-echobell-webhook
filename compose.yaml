@@ -1,0 +1,18 @@
+services:
+  unifi-webhook:
+    build: .
+    image: unifi-echobell-webhook:local
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      ECHOBELL_DIRECT_KEY: "${ECHOBELL_DIRECT_KEY:?set ECHOBELL_DIRECT_KEY in .env}"
+      ECHOBELL_NOTIFICATION_TYPE: "${ECHOBELL_NOTIFICATION_TYPE:-time-sensitive}"
+      ECHOBELL_EXTERNAL_LINK: "${ECHOBELL_EXTERNAL_LINK:-}"
+      WEBHOOK_SECRET: "${WEBHOOK_SECRET:-}"
+    volumes:
+      - unifi-webhook-data:/data
+
+volumes:
+  unifi-webhook-data:
+

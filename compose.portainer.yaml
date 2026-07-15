@@ -1,0 +1,21 @@
+services:
+  unifi-echobell-webhook:
+    image: ghcr.io/sbhhbs/unifi-echobell-webhook:latest
+    container_name: unifi-echobell-webhook
+    pull_policy: always
+    restart: unless-stopped
+    ports:
+      - "8077:8080"
+    environment:
+      ECHOBELL_DIRECT_KEY: "${ECHOBELL_DIRECT_KEY:?ECHOBELL_DIRECT_KEY is required}"
+      ECHOBELL_NOTIFICATION_TYPE: "${ECHOBELL_NOTIFICATION_TYPE:-time-sensitive}"
+      WEBHOOK_SECRET: "${WEBHOOK_SECRET:?WEBHOOK_SECRET is required}"
+      UNIFI_HOST: "${UNIFI_HOST:?UNIFI_HOST is required}"
+      UNIFI_API_KEY: "${UNIFI_API_KEY:?UNIFI_API_KEY is required}"
+      UNIFI_SITE: "${UNIFI_SITE:-default}"
+      UNIFI_VERIFY_SSL: "${UNIFI_VERIFY_SSL:-false}"
+    volumes:
+      - unifi-echobell-data:/data
+
+volumes:
+  unifi-echobell-data:
